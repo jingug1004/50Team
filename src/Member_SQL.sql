@@ -1,0 +1,98 @@
+CREATE TABLE table_name(
+column1 DATE_TYPE1 PRIMARY KEY,
+column2 DATE_TYPE2,
+column3 DATE_TYPE3,
+column4 DATE_TYPE4
+)
+
+CREATE TABLE TP3_MEMBER(
+y VARCHAR2(64) PRIMARY KEY,	
+m_name VARCHAR2(20) NOT NULL,
+m_nickname VARCHAR2(20) NOT NULL,
+m_password VARCHAR2(12) NOT NULL,
+m_phone VARCHAR2(11) NOT NULL,
+m_regdate DATE NOT NULL,
+m_birthday VARCHAR2(8) NOT NULL,
+m_profile VARCHAR2(1000),
+m_highschool VARCHAR2(100),
+m_university VARCHAR2(100),
+m_office VARCHAR2(100),
+m_marriage NUMBER(1),
+m_address VARCHAR2(100),
+m_deactivation NUMBER(1) NOT NULL,
+m_ask NUMBER(1) NOT NULL,
+m_content VARCHAR2(100),
+m_stopdate VARCHAR2(8)
+);
+		INSERT INTO TP_SISTMEMBER(m_id, m_name, m_nickname, m_password, m_phone,m_regdate,m_birthday,m_profile
+		,m_highschool,m_university,m_office,m_marriage,m_address,m_deactivation,m_ask,m_content,m_stopdate)
+		VALUES('', #{m_name}, #{m_nickname}, #{m_password},#{m_phone}, SYSDATE,
+		 #{m_birthday}, #{m_profile},#{m_highschool}, #{m_university}, #{m_office}, #{m_marriage},
+		 #{m_address}, #{m_deactivation}, #{m_ask},#{m_content}, #{m_stopdate})	
+
+select * from TP3_MEMBER;
+
+delete TP3_MEMBER where m_id = 'jossi89@hanmail.net';
+delete TP3_MEMBER where m_phone = 'jossi89@hanmail.net';
+
+
+UPDATE TP3_MEMBER SET M_OFFICE = #{m_office} WHERE ID='s@s'
+
+SELECT * FROM TP3_MEMBER
+WHERE (m_id='qwer' OR m_phone='qwer') AND M_PASSWORD='qwer'
+
+CREATE TABLE TP3_VOTE(
+G_SEQ NUMBER NOT NULL,
+N_VOTE_SEQ NUMBER PRIMARY KEY,
+VOTE1 VARCHAR2(100) NULL,
+VOTE2 VARCHAR2(100) NULL,
+VOTE3 VARCHAR2(100) NULL,
+VOTE4 VARCHAR2(100) NULL,
+VOTE5 VARCHAR2(100) NULL,
+VOTE6 VARCHAR2(100) NULL,
+VOTE7 VARCHAR2(100) NULL,
+VOTE8 VARCHAR2(100) NULL,
+VOTE9 VARCHAR2(100) NULL,
+VOTE10 VARCHAR2(100) NULL,
+N_CONTENT VARCHAR2(4000),
+M_ID VARCHAR2(20) NOT NULL,
+S_DATE DATE NOT NULL,
+M_DATE DATE NOT NULL
+);
+
+CREATE TABLE TP3_VOTELIST(
+N_VOTE_SEQ NUMBER NOT NULL,
+V_LIST VARCHAR2(100) NOT NULL,
+V_COUNT NUMBER
+);
+
+CREATE TABLE TP3_VOTER(
+N_VOTE_SEQ NUMBER NOT NULL,
+M_ID VARCHAR2(20) NOT NULL,
+G_VOTE VARCHAR2(100) NULL
+);
+
+CREATE TABLE TP3_GROUPJOIN(
+J_SEQ NUMBER PRIMARY KEY,
+G_SEQ NUMBER NOT NULL,
+G_MANAGER VARCHAR2(100) NOT NULL,
+M_ID VARCHAR2(100) NOT NULL,
+G_ACCEPT NUMBER(1) NOT NULL,
+R_DATE DATE NOT NULL
+);
+
+CREATE SEQUENCE TP3_JOIN_REQ_SEQ
+START WITH 1 INCREMENT BY 1;
+
+
+CREATE SEQUENCE TP3_VOTE_SEQ
+START WITH 1 INCREMENT BY 1
+
+UPDATE TP3_MEMBER SET M_CONTENT = '' WHERE M_ID='qwer'
+		
+		
+		
+UPDATE TP3_MEMBER SET M_PROFILE = '룰루.jsp' WHERE M_ID='4@4'		
+		
+		
+SELECT NVL(COUNT(*),0) FROM TP3_MEMBER WHERE M_PHONE='01074390923'

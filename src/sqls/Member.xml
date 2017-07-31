@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+
+	
+ 	<select id="login" 
+		parameterType="sist.co.model.MemberDTO"
+		resultType="sist.co.model.MemberDTO">
+		SELECT * FROM TP3_MEMBER
+		WHERE (m_id=#{m_id} OR m_phone=#{m_id}) AND M_PASSWORD=#{m_password}
+	</select>
+	
+	<select id="login2" 
+		parameterType="sist.co.model.MemberDTO"
+		resultType="sist.co.model.MemberDTO">
+		SELECT * FROM TP3_MEMBER
+		WHERE m_id=#{m_id} OR m_phone=#{m_id}
+	</select>
+	
+	
+	<select id="check_member" parameterType="sist.co.model.MemberDTO" resultType="java.lang.Integer">
+		SELECT NVL(COUNT(*),0)
+		FROM TP3_MEMBER WHERE M_ID=#{m_id}
+	</select>
+	
+	
+	<insert id="add_Member" parameterType="sist.co.model.MemberDTO">
+		INSERT INTO TP3_MEMBER(M_ID, M_NAME, M_NICKNAME, M_PASSWORD, M_PHONE, M_REGDATE 
+		, M_BIRTHDAY, M_PROFILE, M_HIGHSCHOOL, M_UNIVERSITY, M_OFFICE, M_MARRIAGE, M_ADDRESS, M_DEACTIVATION 
+		, M_ASK, M_CONTENT, M_GENDER)
+		VALUES(#{m_id}, #{m_name}, #{m_nickname}, #{m_password}, #{m_phone}, SYSDATE, 
+		 #{m_birthday}, 'member_basic.jpg', #{m_highschool}, #{m_university}, #{m_office}, #{m_marriage}, 
+		 #{m_address}, #{m_deactivation}, #{m_ask}, #{m_content}, #{m_gender})	
+	</insert>
+	
+	<update id="change_m_office" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_OFFICE = #{m_office} WHERE M_ID=#{m_id}
+	</update>
+	
+	<update id="change_m_highschool" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_HIGHSCHOOL = #{m_highschool} WHERE M_ID=#{m_id}
+	</update>
+	
+	<update id="change_m_university" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_UNIVERSITY = #{m_university} WHERE M_ID=#{m_id}
+	</update>
+	
+	<update id="change_m_marriage" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_MARRIAGE = #{m_marriage} WHERE M_ID=#{m_id}
+	</update>
+
+	<update id="change_m_content" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_CONTENT = #{m_content} WHERE M_ID=#{m_id}
+	</update>
+	
+	<update id="change_m_address" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_ADDRESS = #{m_address} WHERE M_ID=#{m_id}
+	</update>
+
+
+	<update id="change_m_profile" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_PROFILE = #{m_profile} WHERE M_ID=#{m_id}
+	</update>
+	
+	
+	<update id="change_m_nickname" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_NICKNAME = #{m_nickname} WHERE M_ID=#{m_id}
+	</update>
+	<update id="change_m_gender" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_GENDER = #{m_gender} WHERE M_ID=#{m_id}
+	</update>
+	<update id="change_m_phone" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_PHONE = #{m_phone} WHERE M_ID=#{m_id}
+	</update>
+	<update id="change_m_pwd" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_PASSWORD=#{m_password} WHERE M_ID=#{m_id}
+	</update>
+
+	<update id="del_m_profile" parameterType="sist.co.model.MemberDTO">
+		UPDATE TP3_MEMBER SET M_PROFILE='member_basic.jpg' WHERE M_ID=#{m_id}
+	</update>
+
+
+	<select id="m_phoneAf" parameterType="sist.co.model.MemberDTO" resultType="java.lang.Integer">
+		SELECT NVL(COUNT(*),0) FROM TP3_MEMBER WHERE M_PHONE=#{m_phone}
+	</select>
+	
+	<select id="check_m_pwd" parameterType="sist.co.model.MemberDTO" resultType="java.lang.Integer">
+		SELECT NVL(COUNT(*),0) FROM TP3_MEMBER WHERE M_PASSWORD=#{m_password} AND M_ID=#{m_id}
+	</select>
+
+
+</mapper>  
+
+
+
+

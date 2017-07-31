@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="NewsFeed">
+
+<insert id="writeNewsFeed" parameterType="sist.co.model.NewsFeedDTO">
+	<choose>
+	<when test="n_event_seq > 0">
+	INSERT INTO TP3_NEWSFEED
+	(N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_TAG_FRIEND, N_TAG_WHERE, N_TAG_FEEL ,N_REF, N_STEP, N_DEPTH, N_PARENT, N_LIKECOUNT, N_EVENT_SEQ)
+	VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{g_seq},
+	   0, #{m_id}, #{n_content}, #{n_show}, SYSDATE,  #{n_tag_friend}, #{n_tag_where}, #{n_tag_feel}, (SELECT NVL(MAX(N_REF), 0)+1 FROM TP3_NEWSFEED),0,0,0,0, #{n_event_seq})
+	</when>
+	<otherwise>
+	INSERT INTO TP3_NEWSFEED
+	(N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_TAG_FRIEND, N_TAG_WHERE, N_TAG_FEEL ,N_REF, N_STEP, N_DEPTH, N_PARENT, N_LIKECOUNT)
+	VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{g_seq},
+	   0, #{m_id}, #{n_content}, #{n_show}, SYSDATE,  #{n_tag_friend}, #{n_tag_where}, #{n_tag_feel}, (SELECT NVL(MAX(N_REF), 0)+1 FROM TP3_NEWSFEED),0,0,0,0)
+	</otherwise>
+	</choose>
+</insert>
+
+ <insert id="writeNewsFeedImage"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED
+      (N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_TAG_FRIEND, N_TAG_WHERE, N_TAG_FEEL ,N_REF, N_STEP, N_DEPTH, N_PARENT, N_LIKECOUNT)
+      VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{g_seq},
+         1, #{m_id}, #{n_content}, #{n_show}, SYSDATE,  #{n_tag_friend}, #{n_tag_where}, #{n_tag_feel}, (SELECT NVL(MAX(N_REF), 0)+1 FROM TP3_NEWSFEED),0,0,0,0)
+</insert>
+
+ <insert id="writeNewsFeedImage2"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED_FILE
+      (N_SEQ, N_FORM_NUM, NF_PHOTO)
+      VALUES(TP3_NEWSFEED_SEQ.CURRVAL ,1, #{filename})
+</insert>
+
+
+<select id="getAllNewsFeedList" resultType="sist.co.model.NewsFeedDTO">
+	SELECT * FROM TP3_NEWSFEED
+</select>
+
+
+<update id="updateShow" parameterType="hashmap">
+   UPDATE TP3_NEWSFEED SET N_SHOW=#{updatenum} 
+   WHERE N_SEQ=#{seq}
+</update>
+
+
+<update id="deleteNews" parameterType="Integer">
+   UPDATE TP3_NEWSFEED SET N_DEL=1
+   WHERE N_SEQ =#{seq}
+</update>
+
+
+<select id="getNewsFeedList"	parameterType="sist.co.model.NewsFeedListDTO"
+								resultType="sist.co.model.NewsFeedDTO">
+<if test="viewPage == 'main'">
+<![CDATA[
+   SELECT *
+   FROM (SELECT * FROM TP3_NEWSFEED ORDER BY N_SEQ DESC)
+   WHERE ROWNUM<5 AND N_STEP=0
+]]>
+</if>
+
+<if test="viewPage == 'event'">
+<!-- 
+<![CDATA[
+	SELECT *
+	FROM (SELECT * FROM TP3_NEWSFEED ORDER BY N_SEQ DESC)
+	WHERE ROWNUM<5 
+	AND N_STEP=0
+	AND N_EVENT_SEQ=#{seq}
+]]>
+-->
+<![CDATA[
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM (
+SELECT AC.* FROM (
+SELECT * FROM TP3_NEWSFEED A INNER JOIN TP3_EVENT B ON A.N_EVENT_SEQ=B.E_SEQ ORDER BY A.N_SEQ DESC) 
+AC)
+BC)
+CC)
+WHERE (N_STEP=0 AND N_EVENT_SEQ=#{seq} ) 
+)WHERE NUM >=1 and NUM <=5
+]]>
+</if>
+
+<if test="viewPage == 'people'">
+<![CDATA[
+   SELECT *
+   FROM (SELECT * FROM TP3_NEWSFEED ORDER BY N_SEQ DESC)
+   WHERE ROWNUM<5 
+   AND N_STEP=0
+   AND M_ID=#{m_id}
+]]>
+</if>
+
+</select>
+
+<select id="addPrintNewsFeed"	parameterType="sist.co.model.NewsFeedListDTO"  
+								resultType="sist.co.model.NewsFeedDTO">
+<!--    SELECT * FROM TP3_NEWSFEED
+   WHERE N_SEQ BETWEEN #{lastseq}-6 AND #{lastseq}-1
+   ORDER BY N_SEQ DESC -->
+<if test="viewPage == 'main'">
+<![CDATA[    
+	SELECT * FROM (  SELECT * FROM (SELECT * FROM TP3_NEWSFEED ORDER BY N_SEQ DESC)
+	WHERE ROWNUM<6 AND N_SEQ<#{lastSeq})
+]]>
+</if>
+
+<if test="viewPage == 'event'">
+<![CDATA[
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM (
+SELECT AC.* FROM (
+SELECT * FROM TP3_NEWSFEED A INNER JOIN TP3_EVENT B ON A.N_EVENT_SEQ=B.E_SEQ ORDER BY A.N_SEQ DESC) 
+AC)
+BC)
+CC)
+WHERE (N_STEP=0 AND N_EVENT_SEQ=#{seq} ) AND N_SEQ<#{lastSeq}
+)WHERE NUM<6
+]]>
+</if>
+</select>
+
+<select id="getImageFile" resultType="String">
+	SELECT NF_PHOTO FROM TP3_NEWSFEED
+	INNER JOIN TP3_NEWSFEED_FILE
+	ON TP3_NEWSFEED.N_SEQ = TP3_NEWSFEED_FILE.N_SEQ
+	WHERE TP3_NEWSFEED.N_SEQ=#{seq}
+</select>
+
+<insert id="insertLike"  parameterType="sist.co.model.NewsFeedLikeDTO">
+	INSERT INTO TP3_NEWSFEED_LIKE (N_SEQ, NL_LIKE_PEOPLENAME)
+	VALUES(#{n_seq}, #{m_id})
+</insert>
+
+<update id="addLikeCount" parameterType="sist.co.model.NewsFeedLikeDTO">
+	UPDATE TP3_NEWSFEED SET N_LIKECOUNT=N_LIKECOUNT+1
+	WHERE N_SEQ=#{n_seq}
+</update>
+
+<update id="deleteLikeCount" parameterType="sist.co.model.NewsFeedLikeDTO">
+	UPDATE TP3_NEWSFEED SET N_LIKECOUNT=N_LIKECOUNT-1
+	WHERE N_SEQ=#{n_seq}
+</update>
+
+<select id="getLikeListCount"  parameterType="sist.co.model.NewsFeedLikeDTO" resultType="Integer">
+	SELECT COUNT(*) FROM TP3_NEWSFEED_LIKE
+	WHERE N_SEQ=#{n_seq} AND NL_LIKE_PEOPLENAME=#{m_id}
+</select>
+
+<select id="getLikeList"  parameterType="sist.co.model.NewsFeedLikeDTO" resultType="String">
+	SELECT NL_LIKE_PEOPLENAME FROM TP3_NEWSFEED_LIKE
+	WHERE N_SEQ=#{n_seq} 
+</select>
+
+
+<delete id="deleteLike"  parameterType="sist.co.model.NewsFeedLikeDTO">
+	DELETE FROM TP3_NEWSFEED_LIKE
+	WHERE N_SEQ=#{n_seq} AND NL_LIKE_PEOPLENAME=#{m_id}
+</delete>
+
+<update id="updateComment" parameterType="sist.co.model.NewsFeedDTO">		
+	UPDATE TP3_NEWSFEED SET
+		N_STEP=N_STEP+1
+	WHERE N_REF=(SELECT N_REF FROM TP3_NEWSFEED WHERE N_SEQ=#{n_seq})
+		AND N_STEP>(SELECT N_STEP FROM TP3_NEWSFEED WHERE N_SEQ=#{n_seq})			
+</update>
+	
+<insert id="insertComment" parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED
+      (N_SEQ, M_ID, N_CONTENT, N_WDATE ,N_REF, N_STEP, N_DEPTH, N_SHOW, N_PARENT)
+      VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{m_id}, #{n_content}, SYSDATE,
+      (SELECT N_REF FROM TP3_NEWSFEED WHERE N_SEQ=#{n_seq}),
+      (SELECT N_STEP FROM TP3_NEWSFEED WHERE N_SEQ=#{n_seq})+1,
+      (SELECT N_DEPTH FROM TP3_NEWSFEED WHERE N_SEQ=#{n_seq})+1,1,#{n_seq})
+</insert>
+
+<update id="updateNewsFeed" parameterType="sist.co.model.NewsFeedDTO">
+	UPDATE TP3_NEWSFEED SET N_CONTENT=#{n_content}, N_TAG_FRIEND= #{n_tag_friend}, N_TAG_WHERE= #{n_tag_where}, N_TAG_FEEL=#{n_tag_feel}, N_WDATE=SYSDATE
+	WHERE N_SEQ=#{n_seq}
+</update>
+
+
+
+</mapper>  
+

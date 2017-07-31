@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/views/common/top.jsp=UTF-8
+encoding//WebContent/WEB-INF/views/member/modify_address.jsp=UTF-8
+encoding//WebContent/WEB-INF/views/member/modify_content.jsp=UTF-8
+encoding//WebContent/WEB-INF/views/member/time_line.jsp=UTF-8

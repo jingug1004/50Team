@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="Friend">
+ 
+ <select id="getFriendsList" parameterType="java.lang.String" resultType="sist.co.model.FriendDTO">
+ 	SELECT * FROM TP3_FRIEND 
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT>0 AND F_BLOCK=0 
+ </select>
+ 
+ <select id="getFriendsInformation" parameterType="java.lang.String" resultType="sist.co.model.MemberDTO">
+ 	SELECT * FROM TP3_MEMBER
+ 	WHERE M_ID=#{m_id} AND M_DEACTIVATION=0
+ </select>
+ 
+ <select id="getAskFriendsList" parameterType="java.lang.String" resultType="sist.co.model.FriendDTO">
+ 	SELECT * FROM TP3_FRIEND 
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT=0
+ </select>
+ 
+ <select id="getAnsFriendsList" parameterType="java.lang.String" resultType="sist.co.model.FriendDTO">
+ 	SELECT * FROM TP3_FRIEND 
+ 	WHERE F_ID=#{m_id} AND F_ACCEPT=0
+ </select>
+   
+ 
+ <select id="getFamilyList" parameterType="java.lang.String" resultType="java.lang.String">
+ 	SELECT F_ID FROM TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT=1 AND F_BLOCK=0 AND F_GROUP=0 
+ </select>
+ 
+ <select id="getBestFriendsList" parameterType="java.lang.String" resultType="java.lang.String">
+ 	SELECT F_ID FROM TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT=1 AND F_BLOCK=0 AND F_GROUP=1
+ </select>
+ 
+ <select id="getKnowList" parameterType="java.lang.String" resultType="sist.co.model.FriendDTO">
+ 	SELECT * FROM TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT>0 AND F_BLOCK=0 AND F_GROUP=2
+ </select>
+ 
+ <select id="getBlockList" parameterType="java.lang.String" resultType="java.lang.String">
+ 	SELECT F_ID FROM TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_BLOCK=1
+ </select>
+ 
+ <select id="getFriendsTotalNumOfFriends" parameterType="java.lang.String" resultType="java.lang.Integer">
+ 	SELECT COUNT(*) FROM TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_ACCEPT>0 AND F_BLOCK=0 
+ </select>
+ 
+ 
+ <select id="searchsomeone" parameterType="sist.co.model.MemberDTO" resultType="sist.co.model.MemberDTO">
+ 	SELECT * FROM TP3_MEMBER
+ 	WHERE 1=1
+ 	<if test="m_name!='' and m_name!=null">
+ 		AND UPPER(M_NAME) like UPPER('%${m_name}%')
+ 	</if>
+ 	<if test="m_id!='' and m_id!=null">
+ 		AND UPPER(M_ID) like UPPER('%${m_id}%')
+ 	</if>
+ 	<if test="m_nickname!='' and m_nickname!=null">
+ 		AND UPPER(M_NICKNAME) like UPPER('%${m_nickname}%')
+ 	</if>
+ 	<if test="m_phone!='' and m_phone!=null">
+ 		AND M_PHONE like '%${m_phone}%'
+ 	</if>
+ 	<if test="m_highschool!='' and m_highschool!=null">
+ 		AND UPPER(M_HIGHSCHOOL) like UPPER('%${m_highschool}%')
+ 	</if>
+ 	<if test="m_university!='' and m_university!=null">
+ 		AND UPPER(M_UNIVERSITY) like UPPER('%${m_university}%') 
+ 	</if>
+ 	<if test="m_office!='' and m_office!=null">
+ 		AND UPPER(M_OFFICE) like UPPER('%${m_office}%')
+ 	</if>
+ 	<if test="m_address!='' and m_address!=null">
+ 		AND UPPER(M_ADDRESS) like UPPER('%${m_address}%')
+ 	</if>
+ </select>
+ 
+ 
+ <insert id="befriend" parameterType="sist.co.model.FriendDTO">
+ 	INSERT INTO TP3_FRIEND
+ 	VALUES(TP3_FRIEND_SEQ.NEXTVAL, #{m_id}, #{f_id}, 0, 2, 0)
+ </insert>
+ 
+ <update id="befriendupdate" parameterType="sist.co.model.FriendDTO">
+ 	UPDATE TP3_FRIEND SET F_ACCEPT=0, F_GROUP=2, F_BLOCK=0 
+ 	WHERE M_ID=#{m_id} AND F_ID=#{f_id}
+ </update>
+ 
+ <update id="acceptupdate" parameterType="sist.co.model.FriendDTO">
+ 	UPDATE TP3_FRIEND SET F_ACCEPT=1
+ 	WHERE M_ID=#{f_id} AND F_ID=#{m_id}
+ </update>
+ 
+ <insert id="acceptinsert" parameterType="sist.co.model.FriendDTO">
+ 	INSERT INTO TP3_FRIEND
+ 	VALUES(TP3_FRIEND_SEQ.NEXTVAL, #{m_id}, #{f_id}, 1, 2, 0)
+ </insert>
+ 
+ <delete id="refuse" parameterType="sist.co.model.FriendDTO">
+ 	DELETE TP3_FRIEND
+ 	WHERE M_ID=#{f_id} AND F_ID=#{m_id}
+ </delete>
+ 
+ <delete id="cancle" parameterType="sist.co.model.FriendDTO">
+ 	DELETE TP3_FRIEND
+ 	WHERE M_ID=#{m_id} AND F_ID=#{f_id}
+ </delete>
+ 
+ <insert id="block" parameterType="sist.co.model.FriendDTO">
+ 	INSERT INTO TP3_FRIEND
+ 	VALUES(TP3_FRIEND_SEQ.NEXTVAL, #{m_id}, #{f_id}, 0, 2, 1)
+ </insert>
+ 
+ <update id="blockupdate" parameterType="sist.co.model.FriendDTO">
+ 	UPDATE TP3_FRIEND SET F_ACCEPT=0, F_GROUP=2, F_BLOCK=1 
+ 	WHERE M_ID=#{m_id} AND F_ID=#{f_id}
+ </update>
+ 
+ <select id="blockme" parameterType="java.lang.String" resultType="java.lang.String">
+ 	SELECT M_ID FROM TP3_FRIEND
+ 	WHERE F_ID=#{m_id} AND F_BLOCK=1
+ </select>
+ 
+ <update id="changegroup" parameterType="sist.co.model.FriendDTO">
+ 	UPDATE TP3_FRIEND SET F_GROUP=#{f_group}
+ 	WHERE M_ID=#{m_id} AND F_ID=#{f_id}
+ </update>
+ 
+<select id="confirmdata" parameterType="sist.co.model.FriendDTO" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM TP3_FRIEND
+	WHERE M_ID=#{m_id} AND F_ID=#{f_id}
+</select>
+	
+<select id="youblockme" parameterType="sist.co.model.FriendDTO" resultType="java.lang.String">
+	SELECT F_BLOCK FROM TP3_FRIEND
+	WHERE M_ID=#{f_id} AND F_ID=#{m_id}
+</select>
+
+	
+ </mapper> 
+ 

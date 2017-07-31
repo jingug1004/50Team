@@ -1,0 +1,25 @@
+["newsfeed" 폴더 파일 설명]
+
+	1. newsfeed_update_modal.jsp
+		뉴스피드 수정시 모달에 띄워지는 파일
+		
+	2. newsfeed_list
+		뉴스피드 리스트 폼 생성해주는 파일	-	순수히 생성만!
+		
+	3. newsfeed_list2
+		뉴스피드 리스트 출력 해주는 파일	-	<include>만 쓰는 곳!!
+		
+	4. newsfeed_write
+		뉴스피트 작성 파일
+		
+	5. 뉴스피드DB설명.JPG
+		
+	
+	
+[실행 순서]
+	1. NewsFeedList2.do (처음 리스트 5개 출력)
+	2. newsfeedlist2.jsp (순수폼 include -> newsfeed_write.jsp, newsfeed_list.jsp)
+	3. newsfeed_list.jsp 안에서는... 스크롤 실행시 lastseq데리고  test2.do로 고고
+	4. test2.do 도착
+
+

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Group">
+
+<insert id="group_make" parameterType="sist.co.model.GroupMakeDTO">
+INSERT INTO TP3_MAKEGROUP(G_SEQ,G_NAME,G_TYPE,G_MANAGER)
+VALUES(TP3_GROUP_SEQ.NEXTVAL,#{g_name},#{g_type},#{g_manager})
+</insert>
+
+<select id="select_make_group" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMakeDTO">
+SELECT * FROM TP3_MAKEGROUP
+WHERE G_MANAGER=#{g_manager} AND G_SEQ=(SELECT MAX(G_SEQ) FROM TP3_MAKEGROUP)
+</select>
+<insert id="add_group_manager" parameterType="sist.co.model.GroupMemberDTO">
+INSERT INTO TP3_GROUPMEMBER
+VALUES(#{g_seq},#{m_id},3)
+</insert>
+
+<select id="group_list" parameterType="sist.co.model.GroupListDTO" resultType="sist.co.model.GroupListDTO">
+SELECT A.G_SEQ,A.M_ID,A.G_AUTH,B.G_NAME,B.G_PHOTO,B.G_TYPE,B.G_MANAGER 
+FROM TP3_GROUPMEMBER A,TP3_MAKEGROUP B
+WHERE A.G_SEQ=B.G_SEQ AND M_ID=#{m_id}
+</select>
+
+<select id="group_detail" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMakeDTO">
+SELECT * FROM TP3_MAKEGROUP
+WHERE G_SEQ=#{g_seq}
+</select>
+
+<select id="group_mem_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMemberListDTO">
+SELECT TP3_MEMBER.M_ID,m_name, m_nickname, m_highschool, m_university, m_office, m_address,m_profile, g_seq, g_auth
+FROM TP3_MEMBER
+INNER JOIN TP3_GROUPMEMBER 
+ON TP3_MEMBER.M_ID=TP3_GROUPMEMBER.M_ID
+WHERE G_SEQ=#{g_seq} AND M_NAME LIKE '%'||#{keyword}||'%'
+
+</select>
+
+<select id="group_mem_admin_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMemberListDTO">
+SELECT TP3_MEMBER.M_ID,m_name, m_nickname, m_highschool, m_university, m_office, m_address,m_profile, g_seq, g_auth
+FROM TP3_MEMBER
+INNER JOIN TP3_GROUPMEMBER 
+ON TP3_MEMBER.M_ID=TP3_GROUPMEMBER.M_ID
+WHERE G_SEQ=#{g_seq} AND G_AUTH=3 AND M_NAME LIKE '%'||#{keyword}||'%'
+</select>
+
+<select id="group_mem_reply_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMemberListDTO">
+SELECT TP3_MEMBER.M_ID,m_name, m_nickname, m_highschool, m_university, m_office, m_address,m_profile, g_seq, g_auth
+FROM TP3_MEMBER
+INNER JOIN TP3_GROUPMEMBER 
+ON TP3_MEMBER.M_ID=TP3_GROUPMEMBER.M_ID
+WHERE G_SEQ=#{g_seq} AND G_AUTH=2 AND M_NAME LIKE '%'||#{keyword}||'%'
+</select>
+
+<select id="group_mem_block_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMemberListDTO">
+SELECT TP3_MEMBER.M_ID,m_name, m_nickname, m_highschool, m_university, m_office, m_address,m_profile, g_seq, g_auth
+FROM TP3_MEMBER
+INNER JOIN TP3_GROUPMEMBER 
+ON TP3_MEMBER.M_ID=TP3_GROUPMEMBER.M_ID
+WHERE G_SEQ=#{g_seq} AND G_AUTH=0 AND M_NAME LIKE '%'||#{keyword}||'%'
+</select>
+
+<select id="recommend_group_list" parameterType="sist.co.model.GroupListDTO" resultType="sist.co.model.GroupMakeDTO" ><![CDATA[
+SELECT * FROM( 
+SELECT a.*, rownum as rnum FROM TP3_MAKEGROUP a
+WHERE G_SEQ NOT IN(SELECT G_SEQ FROM TP3_GROUPMEMBER
+WHERE M_ID=#{m_id}) 
+ORDER BY G_SEQ
+)WHERE rnum BETWEEN #{s_num} AND #{l_num}
+
+]]></select>
+
+<insert id="groupimageUpload" parameterType="sist.co.model.GroupMakeDTO">
+UPDATE TP3_MAKEGROUP SET G_PHOTO=#{g_photo}
+WHERE G_SEQ=#{g_seq}
+</insert>
+
+<select id="group_photo" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupPhotoDTO">
+SELECT TP3_NEWSFEED.N_SEQ, TP3_NEWSFEED.G_SEQ, TP3_NEWSFEED.N_FORM_NUM, TP3_NEWSFEED.M_ID, TP3_NEWSFEED.N_CONTENT, TP3_NEWSFEED.N_TAG_FRIEND,
+TP3_NEWSFEED.N_TAG_WHERE, TP3_NEWSFEED.N_TAG_FEEL, TP3_NEWSFEED.N_SHOW, TP3_NEWSFEED.N_WDATE, TP3_NEWSFEED.N_REPORT,
+TP3_NEWSFEED.N_REF, TP3_NEWSFEED.N_STEP, TP3_NEWSFEED.N_DEPTH, TP3_NEWSFEED.N_DEL, TP3_NEWSFEED.N_SHARE, TP3_NEWSFEED.N_EVENT_SEQ,
+TP3_NEWSFEED.N_VOTE_SEQ, TP3_NEWSFEED_FILE.NF_PHOTO, TP3_NEWSFEED_FILE.NF_VIDEO, TP3_NEWSFEED_FILE.NF_FILE
+FROM TP3_NEWSFEED 
+INNER JOIN TP3_NEWSFEED_FILE 
+ON TP3_NEWSFEED.N_SEQ=TP3_NEWSFEED_FILE.N_SEQ
+WHERE G_SEQ=#{g_seq} AND NF_PHOTO IS NOT NULL
+ORDER BY N_WDATE DESC
+</select>
+
+<select id="group_video" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupPhotoDTO">
+SELECT TP3_NEWSFEED.N_SEQ, TP3_NEWSFEED.G_SEQ, TP3_NEWSFEED.N_FORM_NUM, TP3_NEWSFEED.M_ID, TP3_NEWSFEED.N_CONTENT, TP3_NEWSFEED.N_TAG_FRIEND,
+TP3_NEWSFEED.N_TAG_WHERE, TP3_NEWSFEED.N_TAG_FEEL, TP3_NEWSFEED.N_SHOW, TP3_NEWSFEED.N_WDATE, TP3_NEWSFEED.N_REPORT,
+TP3_NEWSFEED.N_REF, TP3_NEWSFEED.N_STEP, TP3_NEWSFEED.N_DEPTH, TP3_NEWSFEED.N_DEL, TP3_NEWSFEED.N_SHARE, TP3_NEWSFEED.N_EVENT_SEQ,
+TP3_NEWSFEED.N_VOTE_SEQ, TP3_NEWSFEED_FILE.NF_PHOTO, TP3_NEWSFEED_FILE.NF_VIDEO, TP3_NEWSFEED_FILE.NF_FILE
+FROM TP3_NEWSFEED
+INNER JOIN TP3_NEWSFEED_FILE
+ON TP3_NEWSFEED.N_SEQ=TP3_NEWSFEED_FILE.N_SEQ
+WHERE G_SEQ=#{g_seq} AND NF_VIDEO IS NOT NULL
+ORDER BY N_WDATE DESC
+</select>
+
+
+<insert id="make_vote" parameterType="sist.co.model.VoteDTO">
+INSERT INTO TP3_VOTE (G_SEQ, N_VOTE_SEQ, VOTE1, VOTE2, VOTE3, VOTE4, VOTE5, VOTE6, VOTE7, VOTE8, VOTE9, VOTE10, N_CONTENT, M_ID,S_DATE,M_DATE)
+VALUES(#{g_seq},TP3_VOTE_SEQ.NEXTVAL,#{vote1},#{vote2},#{vote3},#{vote4},#{vote5},#{vote6},#{vote7},#{vote8},#{vote9},#{vote10},#{n_content},#{m_id},SYSDATE, SYSDATE)
+</insert>
+
+<select id="select_make_vote" parameterType="sist.co.model.VoteDTO" resultType="sist.co.model.VoteDTO">
+SELECT * FROM TP3_VOTE
+WHERE G_SEQ=#{g_seq} AND N_VOTE_SEQ=(SELECT MAX(N_VOTE_SEQ) FROM TP3_VOTE)
+</select>
+
+<insert id="add_vote" parameterType="sist.co.model.VotelistDTO">
+INSERT INTO TP3_VOTELIST(N_VOTE_SEQ,V_LIST,V_COUNT)
+VALUES(#{n_vote_seq},#{v_list},0)
+</insert>
+
+<insert id="add_newsfeed" parameterType="sist.co.model.VoteDTO">
+INSERT INTO TP3_NEWSFEED(N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_REF, N_STEP, N_DEPTH, N_VOTE_SEQ,N_LIKECOUNT)
+VALUES(TP3_NEWSFEED_SEQ.NEXTVAL, #{g_seq},4, #{m_id}, #{n_content}, 5, SYSDATE, 0,0,0,#{n_vote_seq},0)
+
+</insert>
+<select id="filelist" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupPhotoDTO">
+SELECT TP3_NEWSFEED.N_SEQ, TP3_NEWSFEED.G_SEQ, TP3_NEWSFEED.N_FORM_NUM, TP3_NEWSFEED.M_ID, TP3_NEWSFEED.N_CONTENT, TP3_NEWSFEED.N_TAG_FRIEND,
+TP3_NEWSFEED.N_TAG_WHERE, TP3_NEWSFEED.N_TAG_FEEL, TP3_NEWSFEED.N_SHOW, TP3_NEWSFEED.N_WDATE, TP3_NEWSFEED.N_REPORT,
+TP3_NEWSFEED.N_REF, TP3_NEWSFEED.N_STEP, TP3_NEWSFEED.N_DEPTH, TP3_NEWSFEED.N_DEL, TP3_NEWSFEED.N_SHARE, TP3_NEWSFEED.N_EVENT_SEQ,
+TP3_NEWSFEED.N_VOTE_SEQ, TP3_NEWSFEED_FILE.NF_PHOTO, TP3_NEWSFEED_FILE.NF_VIDEO, TP3_NEWSFEED_FILE.NF_FILE
+FROM TP3_NEWSFEED 
+INNER JOIN TP3_NEWSFEED_FILE 
+ON TP3_NEWSFEED.N_SEQ=TP3_NEWSFEED_FILE.N_SEQ
+WHERE G_SEQ=#{g_seq} AND (NF_PHOTO IS NOT NULL OR NF_VIDEO IS NOT NULL OR NF_FILE IS NOT NULL)
+ORDER BY N_WDATE DESC
+</select>
+
+<select id="upfilelist" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupPhotoDTO">
+SELECT TP3_NEWSFEED.N_SEQ, TP3_NEWSFEED.G_SEQ, TP3_NEWSFEED.N_FORM_NUM, TP3_NEWSFEED.M_ID, TP3_NEWSFEED.N_CONTENT, TP3_NEWSFEED.N_TAG_FRIEND,
+TP3_NEWSFEED.N_TAG_WHERE, TP3_NEWSFEED.N_TAG_FEEL, TP3_NEWSFEED.N_SHOW, TP3_NEWSFEED.N_WDATE, TP3_NEWSFEED.N_REPORT,
+TP3_NEWSFEED.N_REF, TP3_NEWSFEED.N_STEP, TP3_NEWSFEED.N_DEPTH, TP3_NEWSFEED.N_DEL, TP3_NEWSFEED.N_SHARE, TP3_NEWSFEED.N_EVENT_SEQ,
+TP3_NEWSFEED.N_VOTE_SEQ, TP3_NEWSFEED_FILE.NF_PHOTO, TP3_NEWSFEED_FILE.NF_VIDEO, TP3_NEWSFEED_FILE.NF_FILE
+FROM TP3_NEWSFEED 
+INNER JOIN TP3_NEWSFEED_FILE 
+ON TP3_NEWSFEED.N_SEQ=TP3_NEWSFEED_FILE.N_SEQ
+WHERE G_SEQ=#{g_seq} AND (NF_PHOTO IS NOT NULL OR NF_VIDEO IS NOT NULL) AND M_ID =#{g_manager}
+ORDER BY N_WDATE DESC
+</select>
+
+<insert id="group_join_request" parameterType="sist.co.model.GroupRequestDTO">
+INSERT INTO TP3_GROUPJOIN(J_SEQ,G_SEQ,G_MANAGER,M_ID,G_ACCEPT,R_DATE)
+VALUES(TP3_JOIN_REQ_SEQ.NEXTVAL,#{g_seq},#{g_manager},#{m_id},0,SYSDATE)
+</insert>
+
+<select id="join_search" parameterType="sist.co.model.GroupRequestDTO" resultType="sist.co.model.GroupMemberDTO">
+SELECT * FROM TP3_GROUPMEMBER
+WHERE G_SEQ =#{g_seq} AND M_ID=#{m_id}
+</select>
+
+
+<select id="join_requset_search" parameterType="sist.co.model.GroupRequestDTO" resultType="sist.co.model.GroupRequestDTO">
+SELECT * FROM TP3_GROUPJOIN
+WHERE G_SEQ =#{g_seq} AND M_ID=#{m_id}
+</select>
+
+<select id="requset_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupRequestDTO">
+SELECT TP3_MEMBER.M_ID,M_HIGHSCHOOL, M_UNIVERSITY, M_OFFICE,M_ADDRESS,M_PROFILE,J_SEQ,R_DATE FROM TP3_GROUPJOIN
+INNER JOIN TP3_MEMBER 
+ON TP3_MEMBER.M_ID=TP3_GROUPJOIN.M_ID
+WHERE G_SEQ = #{g_seq} AND G_ACCEPT=0
+</select>
+
+<update id="accept_group" parameterType="sist.co.model.GroupRequestDTO">
+UPDATE TP3_GROUPJOIN SET G_ACCEPT=1
+WHERE J_SEQ=#{j_seq}
+</update>
+
+<update id="no_accept_group" parameterType="sist.co.model.GroupRequestDTO">
+UPDATE TP3_GROUPJOIN SET G_ACCEPT=2
+WHERE J_SEQ=#{j_seq}
+</update>
+
+<insert id="add_group_member" parameterType="sist.co.model.GroupRequestDTO">
+INSERT INTO TP3_GROUPMEMBER
+VALUES(#{g_seq},#{m_id},1)
+</insert>
+
+ <select id="select_mem" parameterType="sist.co.model.GroupMemberDTO" resultType="sist.co.model.GroupMemberDTO">
+SELECT * FROM TP3_GROUPMEMBER
+WHERE G_SEQ=#{g_seq} AND M_ID=#{m_id}
+</select> 
+
+<delete id="out_groupjoin" parameterType="sist.co.model.GroupMemberDTO">
+DELETE TP3_GROUPJOIN
+WHERE G_SEQ=#{g_seq} AND M_ID=#{m_id}
+</delete>
+
+<delete id="out_groupmember" parameterType="sist.co.model.GroupMemberDTO">
+DELETE TP3_GROUPMEMBER
+WHERE G_SEQ=#{g_seq} AND M_ID=#{m_id}
+</delete>
+
+
+<insert id="group_writeNewsFeed"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED
+      (N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_TAG_FRIEND, N_TAG_WHERE, N_TAG_FEEL ,N_REF, N_STEP, N_DEPTH, N_LIKECOUNT)
+      VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{g_seq},
+         #{n_form_num}, #{m_id}, #{n_content}, #{n_show}, SYSDATE,  #{n_tag_friend}, #{n_tag_where}, #{n_tag_feel}, 0,0,0,0)
+</insert>
+
+<insert id="group_writeNewsFeedImage"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED
+      (N_SEQ,G_SEQ, N_FORM_NUM, M_ID, N_CONTENT, N_SHOW, N_WDATE ,N_TAG_FRIEND, N_TAG_WHERE, N_TAG_FEEL ,N_REF, N_STEP, N_DEPTH, N_LIKECOUNT)
+      VALUES(TP3_NEWSFEED_SEQ.NEXTVAL,#{g_seq},
+         #{n_form_num}, #{m_id}, #{n_content}, #{n_show}, SYSDATE,  #{n_tag_friend}, #{n_tag_where}, #{n_tag_feel}, 0,0,0,0)
+</insert>
+
+<insert id="group_writeNewsFeedImage2"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED_FILE
+      (N_SEQ, N_FORM_NUM, NF_PHOTO)
+      VALUES(TP3_NEWSFEED_SEQ.CURRVAL ,1, #{filename})
+</insert>
+
+<insert id="group_writeNewsFeedImage3"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED_FILE
+      (N_SEQ, N_FORM_NUM, NF_VIDEO)
+      VALUES(TP3_NEWSFEED_SEQ.CURRVAL ,1, #{filename})
+</insert>
+
+<insert id="group_writeNewsFeedImage4"
+   parameterType="sist.co.model.NewsFeedDTO">
+      INSERT INTO TP3_NEWSFEED_FILE
+      (N_SEQ, N_FORM_NUM, NF_FILE)
+      VALUES(TP3_NEWSFEED_SEQ.CURRVAL ,1, #{filename})
+</insert>
+
+<select id="group_newsfeed_list" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupPhotoDTO">
+<![CDATA[ 
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM 
+(select AC.* from (select B.M_PROFILE,B.M_NAME,A.* from TP3_NEWSFEED A INNER JOIN TP3_MEMBER B ON A.M_ID=B.M_ID order by N_WDATE DESC) AC) BC)CC)
+WHERE (G_SEQ =#{g_seq} AND N_PARENT IS NULL ) 
+)WHERE NUM >=1 and NUM <=10
+]]>
+</select>
+
+<select id="group_add_newsfeed_list" parameterType="sist.co.model.GroupListDTO" resultType="sist.co.model.GroupPhotoDTO">
+<![CDATA[ 
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM 	
+(select AC.* from (select B.M_PROFILE,A.* from TP3_NEWSFEED A INNER JOIN TP3_MEMBER B ON A.M_ID=B.M_ID order by N_WDATE DESC) AC) BC)CC)
+WHERE (G_SEQ =#{g_seq} AND N_PARENT IS NULL ) 
+)WHERE NUM >=#{s_num} and NUM <=#{l_num}
+]]>
+</select>
+
+<select id="group_newsfeed_p_form" parameterType="int" resultType="sist.co.model.GroupPhotoDTO">
+SELECT A.*,B.NF_PHOTO FROM TP3_NEWSFEED A
+INNER JOIN TP3_NEWSFEED_FILE B
+ON A.N_SEQ=B.N_SEQ
+WHERE A.N_SEQ=#{n_seq}
+</select>
+
+<select id="group_newsfeed_v_form" parameterType="int" resultType="sist.co.model.GroupPhotoDTO">
+SELECT A.*,B.NF_VIDEO FROM TP3_NEWSFEED A
+INNER JOIN TP3_NEWSFEED_FILE B
+ON A.N_SEQ=B.N_SEQ
+WHERE A.N_SEQ=#{n_seq}
+</select>
+
+<select id="group_newsfeed_b_form" parameterType="sist.co.model.VoteDTO" resultType="sist.co.model.VoteDTO">
+SELECT * FROM TP3_VOTE
+WHERE N_VOTE_SEQ=#{n_vote_seq}
+</select>
+
+<select id="find_voter" parameterType="sist.co.model.VoteDTO" resultType="sist.co.model.VoterDTO">
+SELECT * FROM TP3_VOTER
+WHERE N_VOTE_SEQ=#{n_vote_seq} AND M_ID=#{m_id}
+</select>
+
+<insert id="add_voter" parameterType="sist.co.model.VoterDTO">
+INSERT INTO TP3_VOTER(N_VOTE_SEQ,M_ID,G_VOTE)
+VALUES(#{n_vote_seq},#{m_id},#{g_vote})
+</insert>
+
+<update id="plus_votelist" parameterType="sist.co.model.VoterDTO">
+UPDATE TP3_VOTELIST SET V_COUNT=V_COUNT+1
+WHERE N_VOTE_SEQ= #{n_vote_seq} AND V_LIST =#{g_vote}
+</update>
+
+<select id="vote_result" parameterType="sist.co.model.VoterDTO" resultType="sist.co.model.VotelistDTO">
+SELECT * FROM TP3_VOTELIST
+WHERE N_VOTE_SEQ =#{n_vote_seq}
+</select>
+
+<select id="my_vote" parameterType="sist.co.model.VoterDTO" resultType="sist.co.model.VoterDTO">
+SELECT * FROM TP3_VOTER
+WHERE N_VOTE_SEQ =#{n_vote_seq} and M_ID=#{m_id}
+</select>
+
+<select id="group_coment" parameterType="sist.co.model.GroupPhotoDTO" resultType="sist.co.model.GroupPhotoDTO">
+<![CDATA[ 
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM 
+(select AC.* from (select B.M_PROFILE,A.* from TP3_NEWSFEED A INNER JOIN TP3_MEMBER B ON A.M_ID=B.M_ID order by N_WDATE DESC) AC) BC)CC)
+WHERE (N_PARENT = #{n_parent})
+)WHERE NUM >=1 and NUM <=10
+]]>
+</select>
+
+<select id="group_add_coment" parameterType="sist.co.model.GroupPhotoDTO" resultType="sist.co.model.GroupPhotoDTO">
+<![CDATA[ 
+SELECT * FROM(
+SELECT ROWNUM NUM,CC.* FROM(
+(SELECT BC.* FROM 
+(select AC.* from (select B.M_PROFILE,A.* from TP3_NEWSFEED A INNER JOIN TP3_MEMBER B ON A.M_ID=B.M_ID order by N_WDATE DESC) AC) BC)CC)
+WHERE (N_PARENT = #{n_parent})
+)WHERE NUM >= #{g_seq}-9 and NUM <=#{g_seq}
+]]>
+</select>
+
+
+<select id="group_local_find" parameterType="sist.co.model.GroupMakeDTO" resultType="sist.co.model.GroupMakeDTO">
+<![CDATA[ 
+SELECT * FROM( 
+SELECT * FROM
+(SELECT AC.*,B.M_ADDRESS FROM(
+SELECT a.*, rownum as rnum FROM TP3_MAKEGROUP a
+WHERE G_SEQ NOT IN(SELECT G_SEQ FROM TP3_GROUPMEMBER
+WHERE M_ID=#{g_manager}) 
+ORDER BY G_SEQ) AC
+INNER JOIN TP3_MEMBER B
+ON AC.G_MANAGER=B.M_ID) BC
+WHERE REGEXP_LIKE(BC.M_ADDRESS,#{keyword})
+)WHERE rnum BETWEEN #{s_num} AND #{l_num}
+]]>
+</select>
+
+
+<update id="group_name_update" parameterType="sist.co.model.GroupMakeDTO">
+UPDATE TP3_MAKEGROUP SET G_NAME = #{g_name}
+WHERE G_SEQ = #{g_seq}
+</update>
+
+
+</mapper>
+

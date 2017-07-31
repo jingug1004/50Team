@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Event">
+
+<!-- 이벤트 생성 -->
+<insert id="addEvent" parameterType="sist.co.model.EventDTO">
+	INSERT INTO TP3_EVENT
+		(
+			E_SEQ, E_TYPE, G_SEQ, M_ID, M_NAME, E_TITLE, E_CONTENT, E_LOCATION
+			, E_START_DATE, E_END_DATE, E_WRITE_DATE, E_IMAGE
+		)
+	VALUES
+		(
+			TP3_EVENT_SEQ.NEXTVAL, 1, 0, #{m_id}, #{m_name}, #{e_title}, #{e_content}, #{e_location}
+			, #{e_start_date}, #{e_end_date}, SYSDATE, #{e_image}
+		)
+</insert>
+
+<!-- 이벤트 수정 -->
+<insert id="updateEvent" parameterType="sist.co.model.EventDTO">
+	UPDATE TP3_EVENT SET
+		E_TITLE=#{e_title},
+		E_CONTENT=#{e_content},
+		E_LOCATION=#{e_location},
+		E_START_DATE=#{e_start_date},
+		E_END_DATE=#{e_end_date},
+		E_IMAGE=#{e_image}
+	WHERE E_SEQ=#{e_seq}
+</insert>
+
+<!-- 이벤트 삭제 -->
+<delete id="deleteEvent" parameterType="Integer">
+	DELETE FROM TP3_EVENT
+	WHERE E_SEQ=#{e_seq}
+</delete>
+
+<!-- 초대 회원 리스트 삭제 ※ 이벤트 삭제 시 같이 삭제 -->
+<delete id="deleteEventInvite" parameterType="Integer">
+	DELETE FROM TP3_EVENT_INVITE
+	WHERE E_SEQ=#{e_seq}
+</delete>
+
+<!-- 이벤트 리스트 불러오기 -->
+<select id="selectEventList" parameterType="sist.co.model.CalendarDTO" resultType="sist.co.model.EventDTO">
+	SELECT * FROM TP3_EVENT
+	WHERE SUBSTR(E_START_DATE, 1, 7)=#{yyyymm}
+	AND M_ID=#{m_id}
+	ORDER BY E_SEQ ASC
+</select>
+
+<!-- 이벤트에 초대 가능한 친구 리스트 불러오기 -->
+<select id="selectEventInviteMember"	parameterType="sist.co.model.EventInviteDTO" 
+										resultType="sist.co.model.EventInviteMemberDTO">
+	SELECT * FROM TP3_MEMBER A
+	LEFT JOIN (SELECT * FROM TP3_EVENT_INVITE WHERE E_SEQ=#{e_seq}) B
+	ON A.M_ID = B.M_ID
+	WHERE A.M_ID=#{m_id}
+</select>
+
+<!-- 초대 받은 이벤트 리스트 불러오기 -->
+<select id="selectEventInviteList" parameterType="sist.co.model.CalendarDTO" resultType="sist.co.model.EventDTO">
+	SELECT * FROM TP3_EVENT A INNER JOIN 
+	(SELECT * FROM TP3_EVENT_INVITE
+	WHERE M_ID=#{m_id}) B
+	ON A.E_SEQ=B.E_SEQ
+	WHERE SUBSTR(E_START_DATE, #{substrS}, #{substrE})=#{yyyymm}
+</select>
+
+<select id="selectEventInviteResult" parameterType="Integer" resultType="sist.co.model.EventInviteDTO">
+	SELECT * FROM TP3_EVENT_INVITE
+	WHERE E_SEQ=#{e_seq}
+</select>
+
+<select id="selectEventDetail" parameterType="Integer" resultType="sist.co.model.EventDTO">
+	SELECT * FROM TP3_EVENT
+	WHERE E_SEQ=#{seq}
+</select>
+
+<!-- 
+<insert id="insertEventInvite" parameterType="map">
+	
+	INSERT INTO TP3_EVENT_INVITE(EI_SEQ, E_SEQ, M_ID, EI_JOIN)
+	VALUES
+	<foreach collection="list" item="ac" index="index" open="" close="" separator=",">
+	(TP3_EVENT_INVITE_SEQ.NEXTVAL, #{ac.e_seq}, #{ac.m_id}, 0)
+	</foreach>
+</insert>
+-->
+
+<select id="selectEventInvite"	parameterType="sist.co.model.EventDTO"
+								resultType="sist.co.model.EventDTO">
+	SELECT * FROM TP3_EVENT_INVITE
+	WHERE E_SEQ=#{e_seq}
+	AND M_ID=#{m_id}
+</select>
+
+<insert id="insertEventInvite" parameterType="map">
+	INSERT ALL
+	<foreach collection="list" item="item">
+	INTO TP3_EVENT_INVITE(E_SEQ, M_ID, EI_JOIN, EI_WRITE_DATE)
+	VALUES(#{item.e_seq}, #{item.m_id}, 0, SYSDATE)
+	</foreach>
+	SELECT * FROM DUAL
+</insert>
+
+<update id="updateEventInvite" parameterType="sist.co.model.EventDTO">
+	UPDATE TP3_EVENT_INVITE SET
+	EI_JOIN=#{ei_join}
+	WHERE E_SEQ=#{e_seq}
+	AND M_ID=#{m_id}
+</update>
+
+<!-- 달력: 이벤트 '일'의 세부 이벤트 리스트 불러오기 -->
+<select id="selectEventDayList" parameterType="sist.co.model.CalendarDTO" resultType="sist.co.model.EventDTO">
+	SELECT * FROM TP3_EVENT
+	WHERE SUBSTR(E_START_DATE, 1, 10)=#{yyyymm}
+	AND M_ID=#{m_id}
+	ORDER BY E_START_DATE ASC
+</select>
+
+</mapper>  

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+	"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+	"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+	
+<tiles-definitions>
+
+<definition name="main.tiles" template="/WEB-INF/views/layouts-tiles.jsp">
+	<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_inc" value="/WEB-INF/views/common/top_main.jsp"/>
+	<put-attribute name="left_main" value="/WEB-INF/views/common/left_bbslist.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/newsfeed/newsfeed_list2.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/bbs/bbslist.jsp"/>
+	<!-- <put-attribute name="bottom_inc" value="/WEB-INF/views/common/bottom.jsp"/> -->
+</definition>
+
+<definition name="my_page.tiles" template="/WEB-INF/views/layouts-mypage.jsp">
+	<put-attribute name="header2" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_inc2" value="/WEB-INF/views/common/top_main.jsp"/>
+	<put-attribute name="my_page1" value="/WEB-INF/views/member/my_page.jsp"/>
+	<put-attribute name="my_page2" value="/WEB-INF/views/member/information.jsp"/>
+</definition> 
+
+<definition name="time_line.tiles" extends="my_page.tiles">
+	<put-attribute name="my_page2" value="/WEB-INF/views/member/time_line.jsp"/>
+</definition> 
+
+
+<definition name="login.tiles" template="/WEB-INF/views/layouts-login.jsp">
+	<put-attribute name="top_inc" value="/WEB-INF/views/member/top_login.jsp"/>
+	<put-attribute name="login_main" value="/WEB-INF/views/member/login_main.jsp"/>
+</definition>
+
+
+<definition name="regi.tiles" extends="login.tiles">
+	<put-attribute name="login_main" value="/WEB-INF/views/member/regi.jsp"/>
+</definition>
+
+<!--뉴스피드  -->
+<definition name="newsfeed.tiles" template="/WEB-INF/views/newsfeed/newsfeed_list.jsp">
+</definition>
+
+	<!-- 이벤트 -->
+	<definition name="event_calendar.tiles" template="/WEB-INF/views/layouts-event_calendar.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+		<put-attribute name="top_inc" value="/WEB-INF/views/common/top_main.jsp"/>
+		<put-attribute name="left_main" value="/WEB-INF/views/common/left_event.jsp"/>
+		<put-attribute name="center_main" value="/WEB-INF/views/event/event_calendar.jsp"/>
+	</definition>
+	
+	<definition name="form_calendar.tiles" template="/WEB-INF/views/event/form_calendar.jsp"></definition>
+	
+	<definition name="event_detail.tiles" extends="event_calendar.tiles">
+		<put-attribute name="center_main" value="/WEB-INF/views/event/event_detail.jsp"/>
+	</definition>
+	
+	<definition name="form_event_day_list.tiles" template="/WEB-INF/views/event/form_event_day_list.jsp"></definition>
+
+<!-- 그룹 리스트 출력 -->
+
+<definition name="group_list.tiles" template="/WEB-INF/views/layouts-grouplist.jsp">
+	<put-attribute name="top_inc" value="/WEB-INF/views/common/top_main.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_list.jsp"/>
+	<put-attribute name="bottom_inc" value="/WEB-INF/views/common/bottom.jsp"/>
+</definition>
+
+<!-- 
+<definition name="recommend_group_list.tiles" template="/WEB-INF/views/layouts-grouplist.jsp">
+	<put-attribute name="top_inc" value="/WEB-INF/views/common/top.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/group/recommend_group_list.jsp"/>
+	<put-attribute name="bottom_inc" value="/WEB-INF/views/common/bottom.jsp"/>
+</definition>
+ -->
+ 
+<definition name="recommend_group_list.tiles" extends="group_list.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/recommend_group_list.jsp"/>
+</definition>
+
+<definition name="local_group_list.tiles" extends="group_list.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/local_group_list.jsp"/>
+</definition>
+
+<definition name="list_table.tiles" template="/WEB-INF/views/group/list_table.jsp">
+</definition>
+
+<definition name="g_local_list_table.tiles" template="/WEB-INF/views/group/g_local_list_table.jsp">
+</definition>
+
+<definition name="group_newsfeed_list.tiles" template="/WEB-INF/views/group/group_newsfeed_list.jsp">
+</definition>
+
+	<!-- 리스트 사진 폼 -->
+	<definition name="group_newsfeed_p_form.tiles" template="/WEB-INF/views/group/group_newsfeed_p_form.jsp">
+	</definition>
+	<!-- 리스트 비디오 폼 -->
+	<definition name="group_newsfeed_v_form.tiles" template="/WEB-INF/views/group/group_newsfeed_v_form.jsp">
+	</definition>
+	<!-- 리스트 투표 폼 -->
+	<definition name="group_newsfeed_b_form.tiles" template="/WEB-INF/views/group/group_newsfeed_b_form.jsp">
+	</definition>
+	
+	<!-- 투표 결과 확인 -->
+	<definition name="group_vote_result.tiles" template="/WEB-INF/views/group/group_vote_result.jsp">
+	</definition>
+	
+	<!-- 그룹 댓글  -->
+	<definition name="group_coment.tiles" template="/WEB-INF/views/group/group_coment.jsp">
+	</definition>
+<!-- 그룹 리스트 출력 끝 -->
+
+<!-- 멤버 -->
+
+<definition name="group_detail.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail.jsp"/>
+</definition>
+
+<definition name="group_detail_member.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_member.jsp"/>
+</definition>
+
+<definition name="group_detail_member_admin.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_member_admin.jsp"/>
+</definition>
+
+<definition name="group_detail_member_block.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_member_block.jsp"/>
+</definition>
+
+<!-- 멤버 끝 -->
+
+<definition name="group_detail_event.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_event.jsp"/>
+</definition>
+
+<!-- 포토 -->
+
+<definition name="group_detail_photo.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_photo.jsp"/>
+</definition>
+
+<definition name="group_detail_photo_video.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_photo_video.jsp"/>
+</definition>
+
+<!-- 포토  끝-->
+
+<!-- 파일 -->
+
+<definition name="group_detail_flie.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_flie.jsp"/>
+</definition>
+
+<definition name="group_detail_upload_flie.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_upload_flie.jsp"/>
+</definition>
+
+<definition name="group_detail_share_flie.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_share_flie.jsp"/>
+</definition>
+<!-- 그룹 가입요청 -->
+<definition name="group_detail_request.tiles" extends="main.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/group/group_detail_request.jsp"/>
+</definition>
+
+<!-- 파일 끝 -->
+
+<definition name="friendsearch.tiles" extends="main.tiles">
+	<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_menu" value="/WEB-INF/views/common/top_menu.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/friend_search.jsp"/>
+</definition>
+
+<!-- ay -->
+
+<definition name="friendmain.tiles" extends="main.tiles">
+	<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_menu" value="/WEB-INF/views/common/top_menu.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/friend_search.jsp"/>
+	<put-attribute name="left_main" value="/WEB-INF/views/friends/left_friendslist.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+<!-- 
+<definition name="friendlist.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/friend_list.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+ -->
+<definition name="friendask.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/friend_ask.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+<definition name="familygroup.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/family_group.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+<definition name="bestgroup.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/best_group.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+<definition name="knowgroup.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/know_group.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+<definition name="blockgroup.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/block_group.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+</definition>
+
+
+<definition name="infriendsearch.tiles" template="/WEB-INF/views/layouts-tiles_infriendsearch.jsp">
+	<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_inc" value="/WEB-INF/views/common/top_main.jsp"/>
+	<put-attribute name="top_menu" value="/WEB-INF/views/common/top_menu.jsp"/>
+	<put-attribute name="left_main" value="/WEB-INF/views/friends/left_friendslist.jsp"/>
+	<put-attribute name="right_main" value="/WEB-INF/views/friends/right_friendssearch.jsp"/>
+	<put-attribute name="bottom_inc" value="/WEB-INF/views/common/bottom.jsp"/>
+	
+	<put-attribute name="inner_top_menu" value="/WEB-INF/views/common/inner_top_menu.jsp"/>
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/in_friend_search.jsp"/>
+</definition>
+
+
+<definition name="outfriendssearch.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/out_friend_search.jsp"/>
+</definition>
+
+<definition name="outfriendsearchmain.tiles" extends="friendmain.tiles">
+	<put-attribute name="center_main" value="/WEB-INF/views/friends/out_friend_search_main.jsp"/>
+</definition>
+
+<!-- git병합 후, my_page.tiles 지우기 -->
+<definition name="Movefriendsmain.tiles" template="/WEB-INF/views/layouts-mypage.jsp">
+	<put-attribute name="header2" value="/WEB-INF/views/common/header.jsp"/>
+	<put-attribute name="top_inc2" value="/WEB-INF/views/common/top_main.jsp"/>
+	<put-attribute name="my_page1" value="/WEB-INF/views/friends/friend_page.jsp"/>
+	<put-attribute name="my_page2" value="/WEB-INF/views/newsfeed/newsfeed_list2.jsp"/>
+	<put-attribute name="bottom_inc2" value="/WEB-INF/views/common/bottom.jsp"/>
+</definition>
+
+
+</tiles-definitions>	
